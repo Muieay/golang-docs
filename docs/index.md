@@ -5,13 +5,18 @@ hero:
   name: "Golang 技术文档"
   text: 从 Java/C++ 转向 Golang
   tagline: "完整的Golang学习指南，包含基础、进阶、并发、Web开发和数据库操作"
+  image:
+    src: /favicon.png
+    alt: Golang技术文档
+    width: 210
+    height: 210
   actions:
     - theme: brand
       text: 开始学习
       link: /golang-basics
     - theme: alt
       text: 查看GitHub
-      link: https://github.com/golang/go
+      link: https://github.com/muieay/golang-docs
 
 features:
   - title: 📚 基础教程

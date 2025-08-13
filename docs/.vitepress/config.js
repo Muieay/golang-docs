@@ -5,8 +5,14 @@ export default defineConfig({
   title: "Golang 技术文档",
   description: "从 Java/C++ 转向 Golang 的完整学习指南",
   lastUpdated: true,
+  lang: 'zh-Hans',
+  base: '/golang-docs/',
+  head: [
+    ['link', { rel: 'icon', type: 'image/png', href: '/golang-docs/favicon.png' }]
+  ],
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
+    logo: '/favicon.png',
     nav: [
       { text: '首页', link: '/' },
       { text: '教程', link: '/golang-basics' },
