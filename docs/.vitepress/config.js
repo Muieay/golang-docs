@@ -5,10 +5,11 @@ export default defineConfig({
   title: "Golang 技术文档",
   description: "从 Java/C++ 转向 Golang 的完整学习指南",
   lastUpdated: true,
-  lang: 'zh-Hans',
+  lang: 'zh-CN',
   base: '/golang-docs/',
   head: [
     ['link', { rel: 'icon', type: 'image/png', href: '/golang-docs/favicon.png' }]
+    ['link', { rel: 'canonical', href: 'https://muieay.github.io/golang-docs/' }]
   ],
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
