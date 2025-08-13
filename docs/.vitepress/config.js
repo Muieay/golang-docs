@@ -8,7 +8,7 @@ export default defineConfig({
   lang: 'zh-CN',
   base: '/golang-docs/',
   head: [
-    ['link', { rel: 'icon', type: 'image/png', href: '/golang-docs/favicon.png' }]
+    ['link', { rel: 'icon', type: 'image/png', href: '/golang-docs/favicon.png' }],
     ['link', { rel: 'canonical', href: 'https://muieay.github.io/golang-docs/' }]
   ],
   themeConfig: {
