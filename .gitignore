@@ -1,0 +1,32 @@
+# Node.js dependencies
+node_modules/
+dist/
+*.log
+*.env
+*.env.local
+.temp
+cache
+
+# Vitepress build output
+docs/.vitepress/dist/
+
+# Golang binaries
+*.exe
+*.out
+*.test
+
+# Golang dependencies
+vendor/
+*.mod
+*.sum
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+
+# OS generated files
+.DS_Store
+Thumbs.db
