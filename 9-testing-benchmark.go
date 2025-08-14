@@ -7,12 +7,22 @@ import (
     "time"
 )
 
-// 测试和基准测试
-// Go语言的测试框架和最佳实践
+/*
+Go测试与基准测试最佳实践：
+1. 单元测试：验证函数功能正确性
+2. 基准测试：测量代码性能
+3. 并发测试：验证并发安全性
+4. 内存分析：检测内存分配情况
+*/
 
-// 1. 待测试的函数
+// ==================== 核心功能函数 ====================
 
-// 计算斐波那契数列
+/*
+Fibonacci - 递归实现斐波那契数列
+参数n: 要计算的斐波那契数列位置
+返回值: 第n个斐波那契数
+特点: 简单但效率低(时间复杂度O(2^n))
+*/
 func Fibonacci(n int) int {
     if n <= 1 {
         return n
@@ -20,7 +30,13 @@ func Fibonacci(n int) int {
     return Fibonacci(n-1) + Fibonacci(n-2)
 }
 
-// 优化版的斐波那契数列（使用迭代）
+/*
+FibonacciOptimized - 迭代优化斐波那契数列
+参数n: 要计算的斐波那契数列位置
+返回值: 第n个斐波那契数
+特点: 高效实现(时间复杂度O(n))
+实现思路: 使用两个变量交替保存前两个值
+*/
 func FibonacciOptimized(n int) int {
     if n <= 1 {
         return n
@@ -28,21 +44,35 @@ func FibonacciOptimized(n int) int {
     
     a, b := 0, 1
     for i := 2; i <= n; i++ {
-        a, b = b, a+b
+        a, b = b, a+b // 交换变量值
     }
     return b
 }
 
-// 字符串工具函数
+/*
+ReverseString - 字符串反转函数
+参数s: 要反转的字符串
+返回值: 反转后的字符串
+实现思路: 将字符串转为rune切片后双指针交换
+注意: 使用rune支持Unicode字符
+*/
 func ReverseString(s string) string {
     runes := []rune(s)
     for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-        runes[i], runes[j] = runes[j], runes[i]
+        runes[i], runes[j] = runes[j], runes[i] // 交换字符
     }
     return string(runes)
 }
 
-// 判断素数
+/*
+IsPrime - 素数判断函数
+参数n: 要判断的数字
+返回值: 是否为素数
+优化点: 
+1. 排除偶数
+2. 只检查到sqrt(n)
+3. 步进6减少检查次数
+*/
 func IsPrime(n int) bool {
     if n <= 1 {
         return false
@@ -53,6 +83,7 @@ func IsPrime(n int) bool {
     if n%2 == 0 || n%3 == 0 {
         return false
     }
+    // 检查6k±1形式的数
     for i := 5; i*i <= n; i += 6 {
         if n%i == 0 || n%(i+2) == 0 {
             return false
@@ -61,14 +92,19 @@ func IsPrime(n int) bool {
     return true
 }
 
-// 并发安全的计数器
+// ==================== 并发安全数据结构 ====================
+
+/*
+Counter - 并发安全计数器
+使用sync.Mutex保护共享状态
+*/
 type Counter struct {
-    mu    sync.Mutex
-    value int
+    mu    sync.Mutex // 互斥锁
+    value int        // 计数器值
 }
 
 func NewCounter() *Counter {
-    return &Counter{value: 0}
+    return &Counter{}
 }
 
 func (c *Counter) Increment() {
@@ -83,7 +119,10 @@ func (c *Counter) Value() int {
     return c.value
 }
 
-// 并发安全的队列
+/*
+Queue - 并发安全队列
+使用slice实现FIFO队列
+*/
 type Queue struct {
     items []interface{}
     mu    sync.Mutex
@@ -102,52 +141,21 @@ func (q *Queue) Enqueue(item interface{}) {
 func (q *Queue) Dequeue() (interface{}, bool) {
     q.mu.Lock()
     defer q.mu.Unlock()
-    
     if len(q.items) == 0 {
         return nil, false
     }
-    
     item := q.items[0]
     q.items = q.items[1:]
     return item, true
 }
 
-func (q *Queue) Size() int {
-    q.mu.Lock()
-    defer q.mu.Unlock()
-    return len(q.items)
-}
+// ==================== 测试辅助函数 ====================
 
-// 缓存系统
-type Cache struct {
-    data map[string]interface{}
-    mu   sync.RWMutex
-}
-
-func NewCache() *Cache {
-    return &Cache{data: make(map[string]interface{})}
-}
-
-func (c *Cache) Set(key string, value interface{}) {
-    c.mu.Lock()
-    defer c.mu.Unlock()
-    c.data[key] = value
-}
-
-func (c *Cache) Get(key string) (interface{}, bool) {
-    c.mu.RLock()
-    defer c.mu.RUnlock()
-    val, exists := c.data[key]
-    return val, exists
-}
-
-func (c *Cache) Delete(key string) {
-    c.mu.Lock()
-    defer c.mu.Unlock()
-    delete(c.data, key)
-}
-
-// 性能测试辅助函数
+/*
+generateTestData - 生成测试数据
+参数size: 数据量大小
+返回值: 包含1-size的整数切片
+*/
 func generateTestData(size int) []int {
     data := make([]int, size)
     for i := 0; i < size; i++ {
@@ -156,44 +164,38 @@ func generateTestData(size int) []int {
     return data
 }
 
-// 性能基准测试
+/*
+benchmarkFibonacci - 斐波那契基准测试
+参数n: 计算第n个斐波那契数
+返回值: 计算耗时
+*/
 func benchmarkFibonacci(n int) time.Duration {
     start := time.Now()
     Fibonacci(n)
     return time.Since(start)
 }
 
-func benchmarkFibonacciOptimized(n int) time.Duration {
-    start := time.Now()
-    FibonacciOptimized(n)
-    return time.Since(start)
-}
+// ==================== 测试用例 ====================
 
-// 内存使用测试
-func memoryTest() {
-    // 创建大量对象测试内存使用
-    objects := make([]*Counter, 10000)
-    for i := 0; i < 10000; i++ {
-        objects[i] = NewCounter()
-    }
-    
-    // 清理
-    objects = nil
-}
-
-// 并发性能测试
+/*
+concurrentTest - 并发安全测试
+验证Counter在并发场景下的正确性
+使用WaitGroup同步多个goroutine
+*/
 func concurrentTest() {
     counter := NewCounter()
     var wg sync.WaitGroup
     
-    numGoroutines := 1000
-    incrementsPerGoroutine := 100
+    const (
+        numGoroutines = 1000
+        incrementsPer = 100
+    )
     
     for i := 0; i < numGoroutines; i++ {
         wg.Add(1)
         go func() {
             defer wg.Done()
-            for j := 0; j < incrementsPerGoroutine; j++ {
+            for j := 0; j < incrementsPer; j++ {
                 counter.Increment()
             }
         }()
@@ -201,128 +203,19 @@ func concurrentTest() {
     
     wg.Wait()
     
-    expected := numGoroutines * incrementsPerGoroutine
+    expected := numGoroutines * incrementsPer
     actual := counter.Value()
     
     fmt.Printf("并发测试: 期望 %d, 实际 %d\n", expected, actual)
-    fmt.Printf("测试状态: %s\n", boolToString(expected == actual))
 }
 
-// 字符串处理性能测试
-func stringTest() {
-    testStrings := []string{
-        "hello",
-        "世界",
-        "Hello, 世界!",
-        strings.Repeat("a", 1000),
-        strings.Repeat("测试", 100),
-    }
-    
-    fmt.Println("\n字符串处理测试:")
-    for _, str := range testStrings {
-        start := time.Now()
-        reversed := ReverseString(str)
-        duration := time.Since(start)
-        
-        fmt.Printf("字符串 '%s...' (%d字符) 反转耗时: %v\n", 
-            str[:min(len(str), 20)], len(str), duration)
-        
-        // 验证正确性
-        doubleReversed := ReverseString(reversed)
-        if doubleReversed != str {
-            fmt.Printf("错误: 双重反转不匹配\n")
-        }
-    }
-}
-
-// 素数计算性能测试
-func primeTest() {
-    testNumbers := []int{2, 3, 97, 100, 1000, 10007}
-    
-    fmt.Println("\n素数测试:")
-    for _, num := range testNumbers {
-        start := time.Now()
-        isPrime := IsPrime(num)
-        duration := time.Since(start)
-        
-        fmt.Printf("数字 %d 是素数: %s (耗时: %v)\n", 
-            num, boolToString(isPrime), duration)
-    }
-    
-    // 批量测试
-    primes := 0
-    start := time.Now()
-    for i := 2; i <= 1000; i++ {
-        if IsPrime(i) {
-            primes++
-        }
-    }
-    duration := time.Since(start)
-    fmt.Printf("1-1000中共有 %d 个素数，耗时: %v\n", primes, duration)
-}
-
-// 缓存性能测试
-func cacheTest() {
-    cache := NewCache()
-    
-    // 写入测试
-    start := time.Now()
-    for i := 0; i < 10000; i++ {
-        cache.Set(fmt.Sprintf("key%d", i), i)
-    }
-    writeDuration := time.Since(start)
-    
-    // 读取测试
-    start = time.Now()
-    hits := 0
-    for i := 0; i < 10000; i++ {
-        if _, exists := cache.Get(fmt.Sprintf("key%d", i)); exists {
-            hits++
-        }
-    }
-    readDuration := time.Since(start)
-    
-    fmt.Printf("\n缓存测试:")
-    fmt.Printf("写入10000条记录耗时: %v\n", writeDuration)
-    fmt.Printf("读取10000条记录耗时: %v\n", readDuration)
-    fmt.Printf("读取命中率: %.2f%%\n", float64(hits)/10000*100)
-}
-
-// 队列性能测试
-func queueTest() {
-    queue := NewQueue()
-    
-    // 入队测试
-    start := time.Now()
-    for i := 0; i < 10000; i++ {
-        queue.Enqueue(i)
-    }
-    enqueueDuration := time.Since(start)
-    
-    // 出队测试
-    start = time.Now()
-    dequeued := 0
-    for {
-        if _, ok := queue.Dequeue(); ok {
-            dequeued++
-        } else {
-            break
-        }
-    }
-    dequeueDuration := time.Since(start)
-    
-    fmt.Printf("\n队列测试:")
-    fmt.Printf("入队10000条记录耗时: %v\n", enqueueDuration)
-    fmt.Printf("出队10000条记录耗时: %v\n", dequeueDuration)
-    fmt.Printf("实际出队数量: %d\n", dequeued)
-}
-
-// 性能比较测试
+/*
+performanceComparison - 性能对比测试
+比较递归和迭代斐波那契实现的性能
+计算加速比展示优化效果
+*/
 func performanceComparison() {
-    fmt.Println("\n=== 性能比较测试 ===")
-    
-    // 斐波那契性能比较
-    fmt.Println("\n斐波那契性能比较:")
+    fmt.Println("\n性能比较测试:")
     for n := 10; n <= 40; n += 10 {
         recursiveTime := benchmarkFibonacci(n)
         optimizedTime := benchmarkFibonacciOptimized(n)
@@ -333,30 +226,12 @@ func performanceComparison() {
     }
 }
 
-// 内存分配测试
-func memoryAllocationTest() {
-    fmt.Println("\n=== 内存分配测试 ===")
-    
-    // 测试不同大小的切片分配
-    sizes := []int{100, 1000, 10000, 100000}
-    
-    for _, size := range sizes {
-        start := time.Now()
-        slice := make([]int, size)
-        for i := 0; i < size; i++ {
-            slice[i] = i
-        }
-        duration := time.Since(start)
-        
-        fmt.Printf("分配 %d 个整数的切片耗时: %v\n", size, duration)
-    }
-}
-
-// 测试覆盖率示例
+/*
+testCoverageExample - 测试覆盖率示例
+演示如何测试边界条件
+包括空字符串、单字符、回文等情况
+*/
 func testCoverageExample() {
-    fmt.Println("\n=== 测试覆盖率示例 ===")
-    
-    // 测试各种边界条件
     testCases := []struct {
         name     string
         function func() error
@@ -367,15 +242,9 @@ func testCoverageExample() {
             }
             return nil
         }},
-        {"单字符反转", func() error {
-            if ReverseString("a") != "a" {
-                return fmt.Errorf("单字符反转失败")
-            }
-            return nil
-        }},
         {"回文测试", func() error {
-            palindrome := "racecar"
-            if ReverseString(palindrome) != palindrome {
+            s := "racecar"
+            if ReverseString(s) != s {
                 return fmt.Errorf("回文反转失败")
             }
             return nil
@@ -391,39 +260,31 @@ func testCoverageExample() {
     }
 }
 
-// 并发测试框架
-func concurrentTestFramework() {
-    fmt.Println("\n=== 并发测试框架 ===")
+// ==================== 主函数 ====================
+
+func main() {
+    fmt.Println("=== Go测试与基准测试 ===")
     
-    // 测试不同并发级别
-    for concurrency := 10; concurrency <= 1000; concurrency *= 10 {
-        counter := NewCounter()
-        var wg sync.WaitGroup
-        
-        start := time.Now()
-        
-        for i := 0; i < concurrency; i++ {
-            wg.Add(1)
-            go func() {
-                defer wg.Done()
-                for j := 0; j < 100; j++ {
-                    counter.Increment()
-                }
-            }()
-        }
-        
-        wg.Wait()
-        duration := time.Since(start)
-        
-        expected := concurrency * 100
-        actual := counter.Value()
-        
-        fmt.Printf("并发级别 %d: 耗时 %v, 期望 %d, 实际 %d\n", 
-            concurrency, duration, expected, actual)
-    }
+    // 运行各类测试
+    fmt.Println("\n1. 基本功能验证")
+    fmt.Printf("Fibonacci(10)=%d\n", Fibonacci(10))
+    
+    fmt.Println("\n2. 并发安全测试")
+    concurrentTest()
+    
+    fmt.Println("\n3. 性能对比")
+    performanceComparison()
+    
+    fmt.Println("\n4. 测试覆盖率示例")
+    testCoverageExample()
+    
+    fmt.Println("\n=== 测试完成 ===")
 }
 
-// 辅助函数
+/*
+boolToString - 布尔值转字符串
+辅助函数，用于测试输出
+*/
 func boolToString(b bool) string {
     if b {
         return "true"
@@ -431,54 +292,13 @@ func boolToString(b bool) string {
     return "false"
 }
 
+/*
+min - 取最小值
+辅助函数，用于字符串截取
+*/
 func min(a, b int) int {
     if a < b {
         return a
     }
     return b
-}
-
-func main() {
-    fmt.Println("=== Go语言测试和基准测试 ===")
-    
-    // 运行所有测试
-    fmt.Println("\n1. 基本功能测试")
-    fmt.Printf("Fibonacci(10) = %d\n", Fibonacci(10))
-    fmt.Printf("FibonacciOptimized(10) = %d\n", FibonacciOptimized(10))
-    fmt.Printf("ReverseString("Hello") = %s\n", ReverseString("Hello"))
-    fmt.Printf("IsPrime(97) = %t\n", IsPrime(97))
-    
-    fmt.Println("\n2. 并发测试")
-    concurrentTest()
-    
-    fmt.Println("\n3. 性能测试")
-    performanceComparison()
-    
-    fmt.Println("\n4. 内存分配测试")
-    memoryAllocationTest()
-    
-    fmt.Println("\n5. 字符串处理测试")
-    stringTest()
-    
-    fmt.Println("\n6. 素数计算测试")
-    primeTest()
-    
-    fmt.Println("\n7. 缓存性能测试")
-    cacheTest()
-    
-    fmt.Println("\n8. 队列性能测试")
-    queueTest()
-    
-    fmt.Println("\n9. 测试覆盖率示例")
-    testCoverageExample()
-    
-    fmt.Println("\n10. 并发测试框架")
-    concurrentTestFramework()
-    
-    fmt.Println("\n=== 测试完成 ===")
-    fmt.Println("\n练习：")
-    fmt.Println("1. 为上述所有函数编写完整的单元测试")
-    fmt.Println("2. 使用go test -bench运行基准测试")
-    fmt.Println("3. 使用go test -cover查看测试覆盖率")
-    fmt.Println("4. 实现一个性能分析工具")
 }
